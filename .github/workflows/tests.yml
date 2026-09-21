@@ -1,10 +1,38 @@
 name: Vitest
 on: [push, workflow_dispatch]
 jobs:
+  # The full suite plus the deterministic matrix. The deterministic tz driver
+  # spawns one child process per covered zone, so the same conclusions hold no
+  # matter which default zone the runner uses.
   vitest-run:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Host default zone under which the ENTIRE process runs.
+        tz:
+          - UTC
+          - America/New_York
+          - Europe/Berlin
+          - Australia/Lord_Howe
+          - Asia/Kolkata
+    env:
+      TZ: ${{ matrix.tz }}
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
-      - run: pnpm install
-      - run: pnpm test
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm test -- --run
+
+  # Explicitly opt-in heavier seeded property rounds (slow; not run on every push).
+  heavy-rounds:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    env:
+      TZ: UTC
+      TEMPO_HEAVY: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm run test:heavy

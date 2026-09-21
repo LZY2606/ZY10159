@@ -1,18 +1,24 @@
 import { describe, it, expect } from "vitest"
 import { addDay } from "../addDay"
 
+// Assertions target wall-clock fields (timezone-independent) rather than a
+// zone-specific UTC offset, so they hold under every host TZ.
 describe("addDay", () => {
   it("gets the next day at the beginning of the month", () => {
-    expect(addDay("2022-01-01").toISOString()).toBe("2022-01-02T05:00:00.000Z")
+    const d = addDay("2022-01-01")
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2022, 0, 2])
   })
   it("gets the next day at the end of the year", () => {
-    expect(addDay("2022-12-31").toISOString()).toBe("2023-01-01T05:00:00.000Z")
+    const d = addDay("2022-12-31")
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2023, 0, 1])
   })
   it("gets the next day by providing specified positive number of days", () => {
-    expect(addDay("2022-01-01", 5).toISOString()).toBe("2022-01-06T05:00:00.000Z")
+    const d = addDay("2022-01-01", 5)
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2022, 0, 6])
   })
   it("gets the next day by providing specified negative number of days", () => {
-    expect(addDay("2022-01-01", -5).toISOString()).toBe("2021-12-27T05:00:00.000Z")
+    const d = addDay("2022-01-01", -5)
+    expect([d.getFullYear(), d.getMonth(), d.getDate()]).toEqual([2021, 11, 27])
   })
 
   // test with the current time is at diffDays

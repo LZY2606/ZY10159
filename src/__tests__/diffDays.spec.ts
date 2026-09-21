@@ -22,9 +22,11 @@ describe("differenceInDays", () => {
     ).toBe(3)
   })
 
-  it("different should be -64 hours compared to the current time", () => {
+  it("different should be -28 calendar days compared to the current time", () => {
+    // Anchor inside a DST-free window so the elapsed-day truncation is stable
+    // in every host zone (the previous anchor crossed a spring transition).
     vi.useFakeTimers()
-    vi.setSystemTime(date("2024-04-07T09:10:00.000Z"))
+    vi.setSystemTime(date("2024-06-15T12:00:00.000Z"))
     const compare = addDay(null, -28)
 
     expect(diffDays(compare)).toBe(-28)

@@ -40,7 +40,10 @@
     "docs-build": "npm --prefix ./docs run build",
     "publint": "publint",
     "release": "pnpm build && bumpp --push",
-    "size": "npm run build && size-limit"
+    "size": "npm run build && size-limit",
+    "test:run": "TZ=\"America/New_York\" vitest run",
+    "test:tz": "TZ=\"UTC\" vitest run src/__tests__/determinism/tz-matrix.spec.ts",
+    "test:heavy": "TEMPO_HEAVY=1 TZ=\"UTC\" vitest run src/__tests__/determinism/"
   },
   "files": [
     "dist",
