@@ -1,10 +1,34 @@
 name: Vitest
-on: [push, workflow_dispatch]
+on: [push, pull_request, workflow_dispatch]
 jobs:
   vitest-run:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Host default zone. Every spec must reach the same conclusion in all.
+        tz:
+          - UTC
+          - America/New_York
+          - Europe/Berlin
+          - Australia/Lord_Howe
+          - Asia/Tokyo
+    env:
+      TZ: ${{ matrix.tz }}
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
-      - run: pnpm install
-      - run: pnpm test
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm test -- --run
+      - name: Deterministic date matrix (multi-zone child processes)
+        run: corepack pnpm run test:determinism
+  determinism-heavy:
+    runs-on: ubuntu-latest
+    # Heavier generated round counts; opt-in trigger so PRs stay fast.
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - run: corepack pnpm install --frozen-lockfile
+      - name: Deterministic date matrix (heavy rounds)
+        run: corepack pnpm run test:heavy

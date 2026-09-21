@@ -40,7 +40,9 @@
     "docs-build": "npm --prefix ./docs run build",
     "publint": "publint",
     "release": "pnpm build && bumpp --push",
-    "size": "npm run build && size-limit"
+    "size": "npm run build && size-limit",
+    "test:determinism": "node scripts/tz-tests/index.mjs",
+    "test:heavy": "TEMPO_HEAVY=1 node scripts/tz-tests/index.mjs"
   },
   "files": [
     "dist",
